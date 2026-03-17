@@ -49,24 +49,23 @@ function StockMovements() {
   };
 
   useEffect(() => {
-  fetchMovements();
-  fetchProducts();
-  fetchWarehouses();
-// eslint-disable-next-line
-}, []);
+    fetchMovements();
+    fetchProducts();
+    fetchWarehouses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-
       await API.post("/stock", {
         ...form,
         quantity: Number(form.quantity)
       });
+
       fetchMovements();
       fetchProducts();
-      
+
       setShowModal(false);
 
       setForm({
@@ -90,63 +89,69 @@ function StockMovements() {
     <div className="p-6">
 
       <div className="flex justify-between mb-6">
-
         <h1 className="text-3xl font-bold">Stock Movements</h1>
 
         <button
           onClick={()=>setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
         >
           + Record Movement
         </button>
-
       </div>
 
-      <div className="bg-white shadow rounded-xl overflow-hidden">
+      <div className="bg-white shadow-lg rounded-xl border overflow-hidden">
 
-        <table className="w-full">
+        <div className="overflow-x-auto">
 
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3">Product</th>
-              <th>Warehouse</th>
-              <th>Type</th>
-              <th>Qty</th>
-              <th>Date</th>
-            </tr>
-          </thead>
+          <table className="min-w-full table-auto">
 
-          <tbody>
+            <thead className="bg-gray-100 border-b">
 
-            {movements.map(m => (
-
-              <tr key={m.id} className="border-t">
-
-                <td className="p-3">{m.product_name}</td>
-                <td>{m.warehouse_name}</td>
-                <td>{m.movement_type}</td>
-                <td>{m.quantity}</td>
-                <td>{new Date(m.created_at).toLocaleDateString()}</td>
-
+              <tr className="text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3">Product</th>
+                <th className="px-6 py-3">Warehouse</th>
+                <th className="px-6 py-3">Type</th>
+                <th className="px-6 py-3">Qty</th>
+                <th className="px-6 py-3">Date</th>
               </tr>
 
-            ))}
+            </thead>
 
-          </tbody>
+            <tbody className="divide-y">
 
-        </table>
+              {movements.map(m => (
+
+                <tr key={m.id} className="hover:bg-gray-50">
+
+                  <td className="px-6 py-3">{m.product_name}</td>
+                  <td className="px-6 py-3">{m.warehouse_name}</td>
+                  <td className="px-6 py-3">{m.movement_type}</td>
+                  <td className="px-6 py-3">{m.quantity}</td>
+                  <td className="px-6 py-3">
+                    {new Date(m.created_at).toLocaleDateString()}
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
 
       </div>
-
-      {/* MODAL */}
 
       {showModal && (
 
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
 
-          <div className="bg-white p-6 rounded-xl w-96">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-96">
 
-            <h2 className="text-xl font-bold mb-4">Record Movement</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Record Movement
+            </h2>
 
             <form onSubmit={handleSubmit} className="space-y-3">
 
@@ -163,6 +168,7 @@ function StockMovements() {
                     {p.name}
                   </option>
                 ))}
+
               </select>
 
               <select
@@ -178,6 +184,7 @@ function StockMovements() {
                     {w.name}
                   </option>
                 ))}
+
               </select>
 
               <select
@@ -200,7 +207,7 @@ function StockMovements() {
 
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
               >
                 Save
               </button>

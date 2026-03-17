@@ -196,60 +196,64 @@ function Products() {
         onChange={(e)=>setSearch(e.target.value)}
       />
 
-      <div className="bg-white shadow rounded-xl overflow-hidden">
+      <div className="bg-white shadow-lg rounded-xl overflow-hidden border">
 
-        <table className="w-full">
+  <div className="overflow-x-auto">
 
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3">ID</th>
-              <th>Name</th>
-              <th>SKU</th>
-              <th>Qty</th>
-              <th>Warehouse</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+    <table className="min-w-full table-auto">
 
-          <tbody>
+      <thead className="bg-gray-100 border-b">
+        <tr className="text-left text-sm font-semibold text-gray-700">
+          <th className="px-6 py-3">ID</th>
+          <th className="px-6 py-3">Name</th>
+          <th className="px-6 py-3">SKU</th>
+          <th className="px-6 py-3">Qty</th>
+          <th className="px-6 py-3">Warehouse</th>
+          <th className="px-6 py-3">Actions</th>
+        </tr>
+      </thead>
 
-            {paginated.map(p => (
+      <tbody className="divide-y">
 
-              <tr key={p.id} className="border-t">
+        {paginated.map(p => (
 
-                <td className="p-3">{p.id}</td>
-                <td>{p.name}</td>
-                <td>{p.sku}</td>
-                <td>{p.quantity}</td>
-                <td>{p.warehouse_name}</td>
+          <tr key={p.id} className="hover:bg-gray-50">
 
-                <td className="space-x-2">
+            <td className="px-6 py-3">{p.id}</td>
+            <td className="px-6 py-3">{p.name}</td>
+            <td className="px-6 py-3">{p.sku}</td>
+            <td className="px-6 py-3">{p.quantity}</td>
+            <td className="px-6 py-3">{p.warehouse_name}</td>
 
-                  <button
-                    onClick={()=>openEditModal(p)}
-                    className="bg-yellow-400 px-3 py-1 rounded"
-                  >
-                    Edit
-                  </button>
+            <td className="px-6 py-3 space-x-2">
 
-                  <button
-                    onClick={()=>handleDelete(p.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
+              <button
+                onClick={()=>openEditModal(p)}
+                className="bg-yellow-400 px-3 py-1 rounded hover:bg-yellow-500"
+              >
+                Edit
+              </button>
 
-                </td>
+              <button
+                onClick={()=>handleDelete(p.id)}
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              >
+                Delete
+              </button>
 
-              </tr>
+            </td>
 
-            ))}
+          </tr>
 
-          </tbody>
+        ))}
 
-        </table>
+      </tbody>
 
-      </div>
+    </table>
+
+  </div>
+
+</div>
 
       {/* MODAL */}
 
