@@ -5,7 +5,6 @@ const warehouseController = require("../controllers/warehouseController");
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 
-// CREATE warehouse
 router.post(
   "/",
   authMiddleware,
@@ -13,21 +12,18 @@ router.post(
   warehouseController.createWarehouse
 );
 
-// GET ALL warehouses
 router.get(
   "/",
   authMiddleware,
   warehouseController.getAllWarehouses
 );
 
-// GET warehouse by ID
 router.get(
   "/:id",
   authMiddleware,
   warehouseController.getWarehouseById
 );
 
-// UPDATE warehouse
 router.put(
   "/:id",
   authMiddleware,
@@ -35,7 +31,6 @@ router.put(
   warehouseController.updateWarehouse
 );
 
-// DELETE warehouse
 router.delete(
   "/:id",
   authMiddleware,

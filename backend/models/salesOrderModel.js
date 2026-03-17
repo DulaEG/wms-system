@@ -1,16 +1,11 @@
 const pool = require("../config/db");
 
-
-// ===============================
-// CREATE SALES ORDER (WITH RESERVATION)
-// ===============================
 const createSalesOrder = async (customer_id, items) => {
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
-    // 1️⃣ Create order
     const orderRes = await client.query(
       `INSERT INTO sales_orders (customer_id, status)
        VALUES ($1, 'PENDING')
@@ -20,7 +15,6 @@ const createSalesOrder = async (customer_id, items) => {
 
     const order = orderRes.rows[0];
 
-    // 2️⃣ Process items
     for (let item of items) {
 
       const stockRes = await client.query(
@@ -42,7 +36,6 @@ const createSalesOrder = async (customer_id, items) => {
         throw new Error(`Insufficient available stock for product ${item.product_id}`);
       }
 
-      // Reserve stock
       await client.query(
         `UPDATE products
          SET reserved_quantity = reserved_quantity + $1
@@ -50,7 +43,7 @@ const createSalesOrder = async (customer_id, items) => {
         [item.quantity, item.product_id]
       );
 
-      // Insert order item
+ 
       await client.query(
         `INSERT INTO sales_order_items
          (sales_order_id, product_id, warehouse_id, location_id, quantity)
@@ -77,9 +70,6 @@ const createSalesOrder = async (customer_id, items) => {
 };
 
 
-// ===============================
-// DISPATCH SALES ORDER
-// ===============================
 const dispatchSalesOrder = async (orderId) => {
   const client = await pool.connect();
 
@@ -125,7 +115,7 @@ const dispatchSalesOrder = async (orderId) => {
         throw new Error(`Insufficient stock for product ${item.product_id}`);
       }
 
-      // Deduct physical stock
+  
       await client.query(
   `
   UPDATE products
@@ -137,7 +127,7 @@ WHERE id = $2
   [item.quantity, item.product_id]
 );
 
-      // Insert OUT movement
+    
       await client.query(
         `INSERT INTO stock_movements
          (product_id, warehouse_id, location_id, movement_type, quantity, reference)
@@ -172,14 +162,17 @@ WHERE id = $2
 };
 
 
-// ===============================
-// GET ALL (WITH FILTER)
-// ===============================
 const getAll = async (status) => {
+
   let query = `
-    SELECT so.*, c.name AS customer_name
+    SELECT 
+      so.*,
+      c.name AS customer_name,
+      COUNT(soi.id) AS items
     FROM sales_orders so
     JOIN customers c ON so.customer_id = c.id
+    LEFT JOIN sales_order_items soi 
+      ON so.id = soi.sales_order_id
   `;
 
   const values = [];
@@ -189,16 +182,16 @@ const getAll = async (status) => {
     values.push(status);
   }
 
-  query += ` ORDER BY so.created_at DESC`;
+  query += `
+    GROUP BY so.id, c.name
+    ORDER BY so.created_at DESC
+  `;
 
   const result = await pool.query(query, values);
   return result.rows;
 };
 
 
-// ===============================
-// GET BY ID
-// ===============================
 const getById = async (id) => {
   const orderResult = await pool.query(
     `
@@ -231,9 +224,6 @@ const getById = async (id) => {
 };
 
 
-// ===============================
-// DASHBOARD SUMMARY
-// ===============================
 const getDashboardSummary = async () => {
   const result = await pool.query(`
     SELECT
@@ -246,9 +236,6 @@ const getDashboardSummary = async () => {
   return result.rows[0];
 };
 
-// ===============================
-// CANCEL SALES ORDER
-// ===============================
 const cancelSalesOrder = async (orderId) => {
   const client = await pool.connect();
 

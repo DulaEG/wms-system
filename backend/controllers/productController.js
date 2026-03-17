@@ -1,13 +1,13 @@
 const Product = require("../models/productModel");
 const pool = require("../config/db");
 
-// CREATE PRODUCT
+
 exports.createProduct = async (req, res) => {
   try {
 
     const product = await Product.create(req.body);
 
-    // Record stock movement
+    
     await pool.query(
       `INSERT INTO stock_movements
       (product_id, warehouse_id, location_id, movement_type, quantity, reference)
@@ -29,7 +29,7 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// GET ALL
+
 exports.getProducts = async (req, res) => {
   try {
 
@@ -44,7 +44,7 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-// UPDATE PRODUCT
+
 exports.updateProduct = async (req, res) => {
 
   try {
@@ -90,7 +90,6 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// DELETE PRODUCT
 exports.deleteProduct = async (req, res) => {
 
   try {
@@ -111,7 +110,6 @@ exports.deleteProduct = async (req, res) => {
 
 };
 
-// LOW STOCK
 exports.getLowStock = async (req, res) => {
 
   try {
@@ -130,7 +128,6 @@ exports.getLowStock = async (req, res) => {
 
 };
 
-// STOCK BY WAREHOUSE
 exports.getStockByWarehouse = async (req, res) => {
 
   try {
@@ -147,7 +144,7 @@ exports.getStockByWarehouse = async (req, res) => {
 
 };
 
-// STOCK BY LOCATION
+
 exports.getStockByLocation = async (req, res) => {
 
   try {
@@ -164,7 +161,7 @@ exports.getStockByLocation = async (req, res) => {
 
 };
 
-// SEARCH
+
 exports.searchProducts = async (req, res) => {
 
   try {

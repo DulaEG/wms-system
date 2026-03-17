@@ -30,7 +30,7 @@ exports.receiveOrder = async (order_id) => {
 
     for (let item of items) {
 
-      // UPDATE PRODUCT STOCK
+      
       await client.query(
         `UPDATE products
         SET quantity = quantity + $1
@@ -38,7 +38,7 @@ exports.receiveOrder = async (order_id) => {
         [item.quantity, item.product_id]
       );
 
-      // INSERT STOCK MOVEMENT
+    
       await client.query(
         `INSERT INTO stock_movements
         (product_id, warehouse_id, location_id, movement_type, quantity, reference)

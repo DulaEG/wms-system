@@ -71,59 +71,51 @@ exports.getHistoryByProduct = async (product_id) => {
     "SELECT * FROM stock_movements WHERE product_id = $1 ORDER BY created_at DESC",
     [product_id]
   );
-
   return result.rows;
 };
 
 exports.getFilteredHistory = async (product_id, start, end) => {
-
-  const result = await pool.query(`
-  SELECT 
-    sm.*,
-    p.name AS product_name,
-    w.name AS warehouse_name
-  FROM stock_movements sm
-  JOIN products p ON sm.product_id = p.id
-  JOIN warehouses w ON sm.warehouse_id = w.id
-  WHERE
-    ($1::int IS NULL OR sm.product_id = $1)
-    AND ($2::timestamp IS NULL OR sm.created_at >= $2)
-    AND ($3::timestamp IS NULL OR sm.created_at <= $3)
-  ORDER BY sm.created_at DESC
-`, [product_id || null, start || null, end || null]);
+  const result = await pool.query(
+    `SELECT sm.*, p.name AS product_name, w.name AS warehouse_name
+     FROM stock_movements sm
+     JOIN products p ON sm.product_id = p.id
+     JOIN warehouses w ON sm.warehouse_id = w.id
+     WHERE ($1::int IS NULL OR sm.product_id = $1)
+     AND ($2::timestamp IS NULL OR sm.created_at >= $2)
+     AND ($3::timestamp IS NULL OR sm.created_at <= $3)
+     ORDER BY sm.created_at DESC`,
+    [product_id || null, start || null, end || null]
+  );
 
   return result.rows;
 };
 
 exports.getStockSummary = async (product_id, start, end) => {
-
-  const result = await pool.query(`
-    SELECT
+  const result = await pool.query(
+    `SELECT
       $1::int AS product_id,
 
-      -- Opening stock (before start date)
       COALESCE(SUM(
-        CASE 
+        CASE
           WHEN movement_type = 'IN' THEN quantity
           WHEN movement_type = 'OUT' THEN -quantity
         END
-      ) FILTER (WHERE created_at < $2), 0) AS opening_stock,
+      ) FILTER (WHERE created_at < $2),0) AS opening_stock,
 
-      -- Total IN during period
       COALESCE(SUM(quantity) FILTER (
         WHERE movement_type = 'IN'
         AND created_at BETWEEN $2 AND $3
-      ), 0) AS total_in,
+      ),0) AS total_in,
 
-      -- Total OUT during period
       COALESCE(SUM(quantity) FILTER (
         WHERE movement_type = 'OUT'
         AND created_at BETWEEN $2 AND $3
-      ), 0) AS total_out
+      ),0) AS total_out
 
-    FROM stock_movements
-    WHERE product_id = $1
-  `, [product_id, start, end]);
+     FROM stock_movements
+     WHERE product_id = $1`,
+    [product_id, start, end]
+  );
 
   const row = result.rows[0];
 
@@ -135,6 +127,6 @@ exports.getStockSummary = async (product_id, start, end) => {
     closing_stock:
       parseInt(row.opening_stock) +
       parseInt(row.total_in) -
-      parseInt(row.total_out)
+      parseInt(row.total_out),
   };
 };

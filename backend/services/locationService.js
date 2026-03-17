@@ -1,19 +1,20 @@
 const pool = require("../config/db");
 
-const getAvailableLocation = async (warehouse_id) => {
-  const result = await pool.query(`
-    SELECT id
-    FROM locations
-    WHERE warehouse_id = $1
-    ORDER BY zone, rack, shelf
-    LIMIT 1
-  `, [warehouse_id]);
+async function getAvailableLocation(warehouseId) {
+
+  const result = await pool.query(
+    `SELECT id 
+     FROM locations 
+     WHERE warehouse_id = $1 AND is_occupied = false
+     LIMIT 1`,
+    [warehouseId]
+  );
 
   if (result.rows.length === 0) {
-    throw new Error("No available location in warehouse");
+    return null;
   }
 
   return result.rows[0].id;
-};
+}
 
 module.exports = { getAvailableLocation };

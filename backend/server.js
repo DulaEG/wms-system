@@ -15,6 +15,9 @@ const salesOrderRoutes = require("./routes/salesOrderRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const transferRoutes = require("./routes/transferRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
+const grnRoutes = require("./routes/grnRoutes");
+const returnRoutes = require("./routes/returnRoutes");
+const reportsRoutes = require("./routes/reports");
 
 const authMiddleware = require("./middleware/authMiddleware");
 const roleMiddleware = require("./middleware/roleMiddleware");
@@ -40,9 +43,10 @@ app.use("/api/sales-orders", salesOrderRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/stock-transfer", transferRoutes);
 app.use("/api/inventory", inventoryRoutes);
+app.use("/api/grn", grnRoutes);
+app.use("/api/returns", returnRoutes);
+app.use("/api/reports", reportsRoutes);
 
-
-/* BASIC TEST ROUTES */
 
 app.get("/", (req, res) => {
   res.send("WMS API running");
@@ -67,7 +71,6 @@ app.get("/api/admin", authMiddleware, roleMiddleware("admin"), (req, res) => {
 });
 
 
-/* 404 ROUTE */
 
 app.use((req, res) => {
   res.status(404).json({
@@ -76,8 +79,6 @@ app.use((req, res) => {
   });
 });
 
-
-/* GLOBAL ERROR HANDLER */
 
 app.use((err, req, res, next) => {
   console.error("Global Error:", err);
@@ -88,8 +89,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-
-/* START SERVER */
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");

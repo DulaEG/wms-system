@@ -4,13 +4,16 @@ exports.getInventory = async () => {
 
   const result = await pool.query(`
     SELECT 
-      p.id,
-      p.name AS product,
-      w.name AS warehouse,
-      p.quantity,
-      'N/A' AS location
-    FROM products p
-    JOIN warehouses w ON p.warehouse_id = w.id
+  i.id,
+  i.product_id,
+  p.name AS product,
+  i.warehouse_id,
+  w.name AS warehouse,
+  i.quantity
+FROM inventory i
+JOIN products p ON i.product_id = p.id
+JOIN warehouses w ON i.warehouse_id = w.id
+ORDER BY p.name;
   `);
 
   return result.rows;

@@ -5,7 +5,7 @@ exports.getInventory = async (req, res) => {
     const data = await inventoryModel.getInventory();
     res.json(data);
   } catch (err) {
-    console.error(err);
+    console.error("Inventory controller error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
